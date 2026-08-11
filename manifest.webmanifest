@@ -1,0 +1,53 @@
+{
+ "name": "Shineray Tepic · Distribuidor autorizado",
+ "short_name": "Shineray Tepic",
+ "description": "Camiones de carga Shineray y SUV SWM en Tepic, Nayarit, con precio, ficha técnica y taller propio.",
+ "lang": "es-MX",
+ "dir": "ltr",
+ "start_url": "/",
+ "scope": "/",
+ "id": "/",
+ "display": "standalone",
+ "orientation": "portrait-primary",
+ "background_color": "#F2F0ED",
+ "theme_color": "#3E3A39",
+ "categories": [
+  "business",
+  "shopping"
+ ],
+ "icons": [
+  {
+   "src": "/assets/icon/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "/assets/icon/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "/assets/icon/maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "/apple-touch-icon.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Cotizar por WhatsApp",
+   "url": "/cotizar/"
+  },
+  {
+   "name": "Sucursal Tepic",
+   "url": "/sucursales/tepic/"
+  }
+ ]
+}
