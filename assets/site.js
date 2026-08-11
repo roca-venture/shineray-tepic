@@ -1,6 +1,21 @@
 
 (function(){
  "use strict";
+ // panel de vehículos: pasa el cursor en escritorio, toca en móvil
+ (function(){
+  var w=document.querySelector(".mega-wrap"); if(!w) return;
+  var b=w.querySelector(".nav-trigger"), p=w.querySelector(".mega"), t=null;
+  function open(){ clearTimeout(t); p.classList.add("is-open"); b.setAttribute("aria-expanded","true"); }
+  function close(){ p.classList.remove("is-open"); b.setAttribute("aria-expanded","false"); }
+  function lazy(ms){ clearTimeout(t); t=setTimeout(close,ms||220); }
+  b.addEventListener("click",function(e){ e.preventDefault(); p.classList.contains("is-open")?close():open(); });
+  if(window.matchMedia("(hover:hover)").matches){
+    w.addEventListener("mouseenter",open); w.addEventListener("mouseleave",function(){lazy();});
+    p.addEventListener("mouseenter",open); p.addEventListener("mouseleave",function(){lazy();});
+  }
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&p.classList.contains("is-open")){ close(); b.focus(); } });
+  document.addEventListener("click",function(e){ if(!w.contains(e.target)) close(); });
+ })();
  // ── 360 spinner
  document.querySelectorAll(".spin").forEach(function(el){
   var n=+el.dataset.frames, base=el.dataset.src, img=el.querySelector(".spin-img"),
