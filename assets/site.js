@@ -4,11 +4,11 @@
  // ── 360 spinner
  document.querySelectorAll(".spin").forEach(function(el){
   var n=+el.dataset.frames, base=el.dataset.src, img=el.querySelector(".spin-img"),
-      hint=el.querySelector(".spin-hint"), cache=[], on=false, i=0, x0=null, acc=0;
+      hint=el.querySelector(".spin-hint"), cache=[], on=false, i=+(el.dataset.start||0), x0=null, acc=0;
   function load(){
     if(on) return; on=true; el.classList.add("is-on");
     for(var k=0;k<n;k++){ var im=new Image(); im.src=base+String(k).padStart(2,"0")+".webp"; cache.push(im); }
-    show(0);
+    show(i);
   }
   function show(k){ i=((k%n)+n)%n; if(cache[i]&&cache[i].src) img.src=cache[i].src; }
   function start(e){ load(); x0=(e.touches?e.touches[0]:e).clientX; acc=0; el.classList.add("is-drag"); }
@@ -22,7 +22,7 @@
   function end(){ x0=null; el.classList.remove("is-drag"); }
   el.addEventListener("mousedown",start); window.addEventListener("mousemove",move); window.addEventListener("mouseup",end);
   el.addEventListener("touchstart",start,{passive:true}); el.addEventListener("touchmove",move,{passive:false}); el.addEventListener("touchend",end);
-  if(hint) hint.addEventListener("click",function(){ load(); var k=0, t=setInterval(function(){ show(++k); if(k>=n) clearInterval(t); },55); });
+  if(hint) hint.addEventListener("click",function(){ var s0=i; load(); var k=0, t=setInterval(function(){ show(s0+(++k)); if(k>=n) clearInterval(t); },55); });
  });
 
  // ── calculadora
