@@ -79,49 +79,147 @@
   upd();
  })();
 
- // ── 360 spinner
+ // ── 360: los cuadros se decodifican una sola vez y después solo se dibujan
  document.querySelectorAll(".spin").forEach(function(el){
-  var n=+el.dataset.frames, base=el.dataset.src, img=el.querySelector(".spin-img"),
-      hint=el.querySelector(".spin-hint"), cache=[], on=false, i=+(el.dataset.start||0), x0=null, acc=0;
-  function load(){
-    if(on) return; on=true; el.classList.add("is-on");
-    for(var k=0;k<n;k++){ var im=new Image(); im.src=base+String(k).padStart(2,"0")+".webp"; cache.push(im); }
-    show(i);
-  }
-  function show(k){ i=((k%n)+n)%n; if(cache[i]&&cache[i].src) img.src=cache[i].src; }
-  function start(e){ load(); x0=(e.touches?e.touches[0]:e).clientX; acc=0; el.classList.add("is-drag"); }
-  function move(e){
-    if(x0===null) return;
-    var x=(e.touches?e.touches[0]:e).clientX, d=x-x0; x0=x; acc+=d;
-    var stepPx=Math.max(6, el.clientWidth/(n*1.6));
-    while(Math.abs(acc)>=stepPx){ show(i + (acc>0?-1:1)); acc+= acc>0?-stepPx:stepPx; }
-    if(e.cancelable && e.touches) e.preventDefault();
-  }
-  function end(){ x0=null; el.classList.remove("is-drag"); }
-  el.addEventListener("mousedown",start); window.addEventListener("mousemove",move); window.addEventListener("mouseup",end);
-  el.addEventListener("touchstart",start,{passive:true}); el.addEventListener("touchmove",move,{passive:false}); el.addEventListener("touchend",end);
-  if(hint) hint.addEventListener("click",function(){ var s0=i; load(); var k=0, t=setInterval(function(){ show(s0+(++k)); if(k>=n) clearInterval(t); },55); });
+  var n=+el.dataset.frames, base=el.dataset.src,
+      img=el.querySelector(".spin-img"), hint=el.querySelector(".spin-hint");
+  if(!n || !img) return;
 
-  // empujoncito: al entrar en pantalla gira un par de cuadros y regresa,
-  // para que se note que la unidad se puede arrastrar
-  if("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-   var yaGuinado=false;
-   var ioSpin=new IntersectionObserver(function(entradas){
-    entradas.forEach(function(en){
-     if(!en.isIntersecting || yaGuinado) return;
-     yaGuinado=true; ioSpin.unobserve(el);
-     setTimeout(function(){
-      var s0=i; load();
-      var pasos=[1,2,3,2,1,0], k=0;
-      var t=setInterval(function(){
-       show(s0+pasos[k]); k++;
-       if(k>=pasos.length) clearInterval(t);
-      },110);
-     }, 550);
-    });
-   },{threshold:.45});
-   ioSpin.observe(el);
+  var cache=new Array(n), pedido=false, cv=null, ctx=null,
+      i=+(el.dataset.start||0), acc=0, vel=0, glide=null,
+      arrastra=false, xPrev=0, dxPend=0, pintando=null;
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function lienzo(w,h){
+   cv=document.createElement("canvas");
+   cv.width=w; cv.height=h; cv.className="spin-cv"; cv.setAttribute("aria-hidden","true");
+   ctx=cv.getContext("2d",{alpha:true,desynchronized:true});
+   el.appendChild(cv);
   }
+  function dibujar(){
+   var im=cache[i];
+   if(!im || !im.complete || !im.naturalWidth) return;       // aún no llega: se queda el cuadro anterior
+   if(!cv) lienzo(im.naturalWidth, im.naturalHeight);
+   ctx.clearRect(0,0,cv.width,cv.height);
+   ctx.drawImage(im,0,0,cv.width,cv.height);
+   el.classList.add("is-ready");                              // recién aquí se oculta el <img>
+  }
+  function traer(k,prio){
+   if(cache[k]) return;
+   var im=new Image();
+   im.decoding="async";
+   if("fetchPriority" in im) im.fetchPriority=prio;
+   im.onload=function(){ if(k===i) dibujar(); };
+   im.src=base+String(k).padStart(2,"0")+".webp";
+   cache[k]=im;
+  }
+  function ocioso(f){ (window.requestIdleCallback||function(g){setTimeout(g,200);})(f); }
+
+  // el juego completo pesa ~600 KB: si se baja de golpe le quita ancho de banda
+  // a la imagen grande del encabezado, que es la que mide el LCP.
+  // Primero el cuadro visible; el resto en baja prioridad y ya cargada la página.
+  function cargar(prisa){
+   if(pedido) return; pedido=true; el.classList.add("is-on");
+   traer(i,"high");
+   var resto=function(){
+    for(var d=1;d<=n;d++){ traer((i+d)%n,"low"); traer((i-d+n)%n,"low"); }
+   };
+   if(prisa) resto();                                   // ya interactuó: lo quiere ahora
+   else if(document.readyState==="complete") ocioso(resto);
+   else window.addEventListener("load",function(){ ocioso(resto); },{once:true});
+  }
+  function ir(k){ i=((k%n)+n)%n; dibujar(); }
+
+  // una vuelta completa ≈ 520 px de arrastre
+  function paso(){ return Math.max(4, Math.min(520, Math.max(260, el.clientWidth*0.5))/n); }
+
+  // el ratón dispara muchos más eventos que cuadros pinta la pantalla:
+  // se acumulan y se aplican una sola vez por refresco
+  function aplicar(){
+   pintando=null;
+   var p=paso(), cambio=false;
+   acc+=dxPend; dxPend=0;
+   while(Math.abs(acc)>=p){ i=((i+(acc>0?-1:1))%n+n)%n; acc+= acc>0?-p:p; cambio=true; }
+   if(cambio) dibujar();
+  }
+  function encolar(dx){
+   dxPend+=dx;
+   if(!pintando) pintando=requestAnimationFrame(aplicar);
+  }
+
+  function abajo(e){
+   if(e.button && e.button!==0) return;
+   e.preventDefault();
+   cargar(true);
+   if(glide){ cancelAnimationFrame(glide); glide=null; }
+   arrastra=true; xPrev=e.clientX; vel=0; acc=0; dxPend=0;
+   el.classList.add("is-drag");
+   try{ el.setPointerCapture(e.pointerId); }catch(_){}
+  }
+  function mueve(e){
+   if(!arrastra) return;
+   var dx=e.clientX-xPrev; xPrev=e.clientX;
+   vel=vel*0.75+dx*0.25;
+   encolar(dx);
+  }
+  function suelta(e){
+   if(!arrastra) return;
+   arrastra=false; el.classList.remove("is-drag");
+   try{ el.releasePointerCapture(e.pointerId); }catch(_){}
+   if(reduce || Math.abs(vel)<1.2) return;
+   (function f(){
+    vel*=0.945; encolar(vel);
+    glide = Math.abs(vel)>0.35 ? requestAnimationFrame(f) : null;
+   })();
+  }
+
+  if(window.PointerEvent){
+   el.addEventListener("pointerdown",abajo);
+   el.addEventListener("pointermove",mueve);
+   el.addEventListener("pointerup",suelta);
+   el.addEventListener("pointercancel",suelta);
+   el.addEventListener("pointerenter",function(){ cargar(true); });   // en escritorio ya está listo antes de arrastrar
+  } else {
+   el.addEventListener("mousedown",function(e){ abajo(e); });
+   window.addEventListener("mousemove",function(e){ mueve(e); });
+   window.addEventListener("mouseup",function(e){ suelta(e); });
+   el.addEventListener("touchstart",function(e){ abajo(e.touches[0]); },{passive:false});
+   el.addEventListener("touchmove",function(e){ mueve(e.touches[0]); if(e.cancelable) e.preventDefault(); },{passive:false});
+   el.addEventListener("touchend",function(e){ suelta({}); });
+  }
+
+  el.setAttribute("tabindex","0");
+  el.setAttribute("role","group");
+  el.setAttribute("aria-label","Vista 360° — arrastra o usa las flechas");
+  el.addEventListener("keydown",function(e){
+   if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+   e.preventDefault(); cargar(true); ir(i + (e.key==="ArrowRight"?1:-1));
+  });
+
+  if(hint) hint.addEventListener("click",function(){
+   cargar(true);
+   var k=0, t=setInterval(function(){ ir(i+1); if(++k>=n) clearInterval(t); },55);
+  });
+
+  // al entrar en pantalla: precarga siempre, y da un empujoncito para que se
+  // note que la unidad se puede arrastrar
+  if("IntersectionObserver" in window){
+   var io=new IntersectionObserver(function(ent){
+    ent.forEach(function(x){
+     if(!x.isIntersecting) return;
+     io.unobserve(el); cargar();
+     if(reduce) return;
+     var guino=function(reintento){
+      var listo=cache[(i+3)%n] && cache[(i+3)%n].complete;
+      if(!listo){ if(reintento) setTimeout(function(){ guino(false); },1600); return; }
+      var i0=i, pasos=[1,2,3,2,1,0], k=0;
+      var t=setInterval(function(){ ir(i0+pasos[k]); if(++k>=pasos.length) clearInterval(t); },110);
+     };
+     setTimeout(function(){ guino(true); },700);
+    });
+   },{threshold:.4});
+   io.observe(el);
+  } else { cargar(); }
  });
 
  // ── calculadora
