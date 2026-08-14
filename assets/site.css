@@ -140,6 +140,33 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .lede-center{text-align:center;margin:0 auto}
 .cta-center{justify-content:center}
 
+/* ── carrusel del encabezado: los cinco vehículos en el mismo escenario ── */
+.hero-car .stage-veh{position:relative;aspect-ratio:1400/620}
+/* especificidad alta a propósito: el fundido de carga (.img-fade.is-loaded)
+   vive más abajo en la hoja y con menos peso le ganaba a este opacity:0,
+   dejando los cinco vehículos encimados */
+.hero-car .stage-veh .hv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+ opacity:0;transition:opacity .75s var(--ease)}
+.hero-car .stage-veh .hv.is-cur{opacity:1}
+.hero-tabs{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;
+ margin-top:clamp(20px,3vw,32px)}
+.hero-tab{display:flex;flex-direction:column;align-items:center;gap:1px;
+ background:transparent;border:1px solid transparent;border-radius:var(--r-md);
+ padding:9px 16px;cursor:pointer;font:inherit;color:var(--ink-2);
+ transition:background .25s,border-color .25s,color .25s}
+.hero-tab b{font-size:15px;letter-spacing:-.03em;color:var(--ink-2);transition:color .25s}
+.hero-tab span{font-size:11px;letter-spacing:.04em}
+.hero-tab:hover{background:rgba(23,22,26,.04)}
+.hero-tab.on{background:var(--paper);border-color:var(--line);box-shadow:var(--sh-2)}
+.hero-tab.on b{color:var(--ink)}
+.hero-tab.on span{color:var(--ink-2)}
+@media(max-width:560px){
+ .hero-tabs{gap:var(--s1)}
+ .hero-tab{padding:7px 11px}
+ .hero-tab span{display:none}
+}
+@media(prefers-reduced-motion:reduce){.hero-car .hv{transition:none}}
+
 /* microetiqueta */
 .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
  display:inline-flex;align-items:center;gap:var(--s2)}
@@ -513,7 +540,9 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
  .ftr-grid{grid-template-columns:1fr}
  .kpis{gap:var(--s5)}
  .cta-row .btn{flex:1 1 100%}
- .hdr-act .btn-wa{display:none}
+ /* antes se escondía en pantallas chicas porque al lado estaba "Cotizar";
+    ahora es el único botón del encabezado, así que se queda */
+ .hdr-act .btn-wa{padding:0 14px;font-size:13.5px}
  .fab span{display:none}
  .fab{padding:0 17px}
  .trust{grid-template-columns:1fr 1fr}
@@ -598,3 +627,8 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
  .reveal .spotlights>*,.reveal .gar-grid>*,.reveal .suc-grid>*{
   opacity:1;transform:none;transition:none;transition-delay:0s!important}
 }
+
+
+/* Ajustes hechos desde el editor visual.
+   Se escriben solos al pulsar «Guardar».
+   Puedes borrar cualquier bloque a mano si te arrepientes. */
