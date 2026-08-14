@@ -79,6 +79,44 @@
   upd();
  })();
 
+ // ── carrusel del encabezado: los cinco vehículos, mismo escenario
+ (function(){
+  var car=document.getElementById("heroCar"); if(!car) return;
+  var datosEl=document.getElementById("heroDatos"); if(!datosEl) return;
+  var datos; try{ datos=JSON.parse(datosEl.textContent); }catch(e){ return; }
+  if(!datos.length) return;
+
+  var imgs=car.querySelectorAll(".hv"),
+      palabra=car.querySelector("[data-hero-word]"),
+      meta=document.querySelector("[data-hero-meta]"),
+      ficha=document.querySelector("[data-hero-ficha]"),
+      pestanas=document.querySelectorAll(".hero-tab");
+  var i=0, reloj=null;
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function ir(k){
+   i=(k+datos.length)%datos.length;
+   for(var j=0;j<imgs.length;j++) imgs[j].classList.toggle("is-cur", j===i);
+   for(var t=0;t<pestanas.length;t++){
+    pestanas[t].classList.toggle("on", t===i);
+    pestanas[t].setAttribute("aria-selected", t===i ? "true" : "false");
+   }
+   if(palabra) palabra.textContent=datos[i].w;
+   if(meta) meta.textContent=datos[i].m;
+   if(ficha){ ficha.textContent="Ver el "+datos[i].w; ficha.href=datos[i].u; }
+  }
+  function para(){ if(reloj){ clearInterval(reloj); reloj=null; } }
+
+  for(var t=0;t<pestanas.length;t++)(function(t){
+   pestanas[t].addEventListener("click",function(){ para(); ir(t); });
+  })(t);
+
+  ir(0);
+  // avanza solo hasta que la persona elige: a partir de ahí manda ella
+  if(!reduce) reloj=setInterval(function(){ ir(i+1); }, 5200);
+  car.addEventListener("pointerenter",para);
+ })();
+
  // ── 360: los cuadros se decodifican una sola vez y después solo se dibujan
  document.querySelectorAll(".spin").forEach(function(el){
   var n=+el.dataset.frames, base=el.dataset.src,
@@ -324,7 +362,8 @@
  // ── las imágenes diferidas entran con fundido en lugar de aparecer de golpe
  (function(){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+  // las del carrusel quedan fuera: ya tienen su propio fundido y este las forzaba a verse
+  document.querySelectorAll('img[loading="lazy"]:not(.hv)').forEach(function(img){
    if(img.complete) return;                 // ya estaba: no la escondemos
    img.classList.add("img-fade");           // la clase la pone el JS: sin JS todo se ve
    function listo(){ img.classList.add("is-loaded"); }
