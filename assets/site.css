@@ -141,13 +141,25 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .cta-center{justify-content:center}
 
 /* ── carrusel del encabezado: los cinco vehículos en el mismo escenario ── */
-.hero-car .stage-veh{position:relative;aspect-ratio:1400/620}
+.hero-car .stage-veh{position:relative;aspect-ratio:1400/620;overflow:visible}
 /* especificidad alta a propósito: el fundido de carga (.img-fade.is-loaded)
    vive más abajo en la hoja y con menos peso le ganaba a este opacity:0,
    dejando los cinco vehículos encimados */
 .hero-car .stage-veh .hv{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
- opacity:0;transition:opacity .75s var(--ease)}
-.hero-car .stage-veh .hv.is-cur{opacity:1}
+ opacity:0;transform:scale(.60);z-index:0;pointer-events:none;
+ transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.hero-car .stage-veh .hv.is-cur{opacity:1;transform:none;z-index:3}
+/* el anterior y el siguiente se asoman a los lados, atenuados y clicables */
+.hero-car .stage-veh .hv.is-prev,
+.hero-car .stage-veh .hv.is-next{opacity:.26;z-index:2;pointer-events:auto;cursor:pointer}
+.hero-car .stage-veh .hv.is-prev{transform:translateX(-56%) scale(.70)}
+.hero-car .stage-veh .hv.is-next{transform:translateX(56%) scale(.70)}
+.hero-car .stage-veh .hv.is-prev:hover,
+.hero-car .stage-veh .hv.is-next:hover{opacity:.5}
+@media(max-width:700px){
+ .hero-car .stage-veh .hv.is-prev{transform:translateX(-66%) scale(.62);opacity:.16}
+ .hero-car .stage-veh .hv.is-next{transform:translateX(66%) scale(.62);opacity:.16}
+}
 .hero-tabs{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;
  margin-top:clamp(20px,3vw,32px)}
 .hero-tab{display:flex;flex-direction:column;align-items:center;gap:1px;

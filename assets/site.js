@@ -95,8 +95,14 @@
   var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function ir(k){
-   i=(k+datos.length)%datos.length;
-   for(var j=0;j<imgs.length;j++) imgs[j].classList.toggle("is-cur", j===i);
+   var n=datos.length;
+   i=(k+n)%n;
+   var ant=(i-1+n)%n, sig=(i+1)%n;
+   for(var j=0;j<imgs.length;j++){
+    imgs[j].classList.toggle("is-cur",  j===i);
+    imgs[j].classList.toggle("is-prev", j===ant && n>2);
+    imgs[j].classList.toggle("is-next", j===sig && n>1);
+   }
    for(var t=0;t<pestanas.length;t++){
     pestanas[t].classList.toggle("on", t===i);
     pestanas[t].setAttribute("aria-selected", t===i ? "true" : "false");
@@ -110,6 +116,11 @@
   for(var t=0;t<pestanas.length;t++)(function(t){
    pestanas[t].addEventListener("click",function(){ para(); ir(t); });
   })(t);
+
+  // los vehículos de los lados también llevan a su modelo
+  for(var q=0;q<imgs.length;q++)(function(q){
+   imgs[q].addEventListener("click",function(){ para(); ir(q); });
+  })(q);
 
   ir(0);
   // avanza solo hasta que la persona elige: a partir de ahí manda ella
