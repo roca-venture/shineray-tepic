@@ -116,7 +116,7 @@
    if(ficha){ ficha.textContent="Ver el "+datos[i].w; ficha.href=datos[i].u; }
   }
   function para(){ if(reloj){ clearInterval(reloj); reloj=null; } }
-  function arranca(){ if(!reduce && !elegido && aLaVista && !reloj) reloj=setInterval(function(){ ir(i+1); },6000); }
+  function arranca(){ if(!reduce && !elegido && aLaVista && !reloj) reloj=setInterval(function(){ ir(i+1); },4000); }
 
   for(var t=0;t<pestanas.length;t++)(function(t){
    pestanas[t].addEventListener("click",function(){ elegido=true; para(); ir(t); });
