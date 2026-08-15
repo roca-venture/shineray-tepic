@@ -530,9 +530,19 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .cmp-bar.is-top i{background:var(--red)}
 .cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
  border-radius:var(--r-lg);background:var(--paper);box-shadow:var(--sh-1)}
-.cmp{border-collapse:collapse;width:100%;min-width:860px;font-size:14.5px}
+/* table-layout:fixed reparte el sobrante en partes iguales entre las columnas
+   visibles. Antes cada modelo tenía width:17% y, al quitar modelos, el 66%
+   restante se lo quedaba entero la columna de etiquetas.
+   El ancho mínimo depende de cuántos vehículos quedan (--cols, lo pone el JS):
+   con cinco no cabe en un iPhone y aparece el desplazamiento; con dos o tres,
+   cabe y no hace falta. */
+/* 146 + 5×120 = 746 px: entra completa en un iPad de 820 pt sin desplazar */
+.cmp{border-collapse:collapse;width:100%;table-layout:fixed;font-size:14.5px;
+ min-width:calc(var(--cmp-lbl,146px) + var(--cols,5) * var(--cmp-col,120px))}
+.cmp thead td:first-child,.cmp tbody th{width:var(--cmp-lbl,146px)}
 .cmp thead th{padding:var(--s4);border-bottom:1px solid var(--line);vertical-align:bottom;text-align:left;
- font-weight:400;width:17%}
+ font-weight:400;width:auto}
+@media(max-width:560px){.cmp{--cmp-lbl:116px;--cmp-col:116px}}
 .cmp thead th a{color:var(--ink);display:block}
 .cmp thead th a:hover{text-decoration:none}
 .cmp thead th img{width:100%;margin-bottom:var(--s3);border-radius:var(--r-sm)}

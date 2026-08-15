@@ -428,11 +428,17 @@
   var tabla=document.getElementById("tabla-comparador"); if(!tabla) return;
   var chips=document.querySelectorAll('[data-cmp-toggle]');
   function apply(){
+   var vivos=0;
    chips.forEach(function(c){
     var on=c.checked, slug=c.dataset.cmpToggle;
+    if(on) vivos++;
     tabla.querySelectorAll('[data-cmp-col="'+slug+'"]').forEach(function(el){ el.classList.toggle("is-hidden",!on); });
    });
+   // el ancho mínimo de la tabla sigue al número de vehículos a la vista:
+   // así solo se desplaza cuando de verdad no cabe
+   tabla.style.setProperty("--cols", vivos);
   }
+  apply();
   chips.forEach(function(c){ c.addEventListener("change",function(){
    var checked=Array.prototype.filter.call(chips,function(x){return x.checked;});
    if(checked.length<2){ c.checked=true; return; } // siempre queda algo que comparar
