@@ -122,16 +122,13 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
  width:min(96%,1180px);height:min(72%,520px);z-index:0;pointer-events:none;
  background:radial-gradient(ellipse at center, rgba(23,22,26,.10), rgba(23,22,26,0) 70%)}
 /* la palabra gigante vive detrás: tono suave, no compite con el vehículo */
-/* El degradado se recorta con background-clip:text, y ese recorte solo pinta
-   dentro de la caja del elemento. Con line-height .74 la caja quedaba más baja
-   que las letras y les cortaba la parte de arriba. El padding agranda la caja
-   y el margen negativo la deja donde estaba. */
+/* Tinta plana, sin degradado. Antes el color salía de un background-clip:text,
+   que solo pinta dentro de la caja del elemento: con line-height .74 las letras
+   sobresalían por arriba y se veían rebanadas. Con color sólido eso no puede pasar. */
 .stage-word{position:absolute;left:50%;top:clamp(-6px,1vw,12px);transform:translateX(-50%);
  font-size:clamp(120px,27vw,420px);font-weight:800;letter-spacing:-.07em;line-height:.74;
- padding:.22em 0;margin-top:-.22em;
- color:transparent;-webkit-text-stroke:0;white-space:nowrap;z-index:0;pointer-events:none;user-select:none;
- background:linear-gradient(180deg, rgba(23,22,26,.11) 0%, rgba(23,22,26,.03) 88%);
- -webkit-background-clip:text;background-clip:text}
+ color:rgba(23,22,26,.075);
+ white-space:nowrap;z-index:0;pointer-events:none;user-select:none}
 .stage-veh{position:relative;z-index:1;width:min(100%,1180px);margin-top:clamp(16px,4.4vw,72px);
  filter:drop-shadow(0 30px 40px rgba(23,22,26,.16))}
 .stage-veh img{width:100%}
