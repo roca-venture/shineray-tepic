@@ -485,12 +485,19 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .cmp-chip:has(input:checked) input{accent-color:#fff}
 .cmp-chip input{accent-color:var(--red);width:15px;height:15px}
 .cmp thead th[data-cmp-col].is-hidden,.cmp tbody td[data-cmp-col].is-hidden{display:none}
-.cmp-bar{position:relative;display:flex;align-items:center;height:34px;border-radius:var(--r-xs);
- overflow:hidden;background:var(--bg)}
-.cmp-bar::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);
- background:linear-gradient(90deg,rgba(243,39,53,.22),rgba(243,39,53,.72));border-radius:var(--r-xs)}
-.cmp-bar b{position:relative;z-index:1;padding:0 var(--s3);font-size:14px;font-weight:800;
- letter-spacing:-.02em;color:var(--ink)}
+/* la cifra es lo que se lee; la regla fina de abajo da la magnitud relativa.
+   Nada de barras rellenas: en este segmento las fichas premium (Savic, Zero)
+   se apoyan en tipografía, no en gráficas de colores. */
+.cmp-bar{position:relative;display:block;min-width:104px;padding-bottom:11px}
+.cmp-bar b{font-size:15.5px;font-weight:700;letter-spacing:-.02em;color:var(--ink-2);
+ font-variant-numeric:tabular-nums;transition:color .2s}
+.cmp-bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+ background:var(--line);border-radius:2px}
+.cmp-bar i{position:absolute;left:0;bottom:0;height:2px;width:var(--w);z-index:1;
+ background:var(--ink-3);border-radius:2px}
+/* el que encabeza la fila: cifra en negro y regla en rojo */
+.cmp-bar.is-top b{color:var(--ink);font-weight:800}
+.cmp-bar.is-top i{background:var(--red)}
 .cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
  border-radius:var(--r-lg);background:var(--paper);box-shadow:var(--sh-1)}
 .cmp{border-collapse:collapse;width:100%;min-width:860px;font-size:14.5px}
