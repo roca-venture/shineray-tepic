@@ -166,6 +166,18 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
  .hero-car .stage-veh .hv.is-prev,
  .hero-car .stage-veh .hv.is-next{opacity:0;pointer-events:none}
 }
+/* indicadores: cuántos vehículos hay y en cuál vas. Sin texto, sin cajas:
+   el activo se alarga y se pinta de rojo, los demás son puntos neutros */
+.hero-dots{display:flex;justify-content:center;align-items:center;gap:9px;
+ margin-top:clamp(18px,2.6vw,30px)}
+.hero-dot{width:7px;height:7px;padding:0;border:0;border-radius:99px;
+ background:var(--line);cursor:pointer;-webkit-appearance:none;appearance:none;
+ transition:width .4s var(--ease),background .3s var(--ease)}
+.hero-dot:hover{background:var(--ink-3)}
+.hero-dot.on{width:26px;background:var(--red)}
+.hero-dot.on:hover{background:var(--red-d)}
+@media(prefers-reduced-motion:reduce){.hero-dot{transition:none}}
+
 .hero-tabs{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;
  margin-top:clamp(20px,3vw,32px)}
 .hero-tab{display:flex;flex-direction:column;align-items:center;gap:1px;
