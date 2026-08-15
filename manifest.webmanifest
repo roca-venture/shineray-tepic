@@ -9,8 +9,8 @@
  "id": "/",
  "display": "standalone",
  "orientation": "portrait-primary",
- "background_color": "#F2F0ED",
- "theme_color": "#3E3A39",
+ "background_color": "#FFFFFF",
+ "theme_color": "#17161A",
  "categories": [
   "business",
   "shopping"
