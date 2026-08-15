@@ -88,6 +88,7 @@
 
   var imgs=car.querySelectorAll(".hv"),
       palabra=car.querySelector("[data-hero-word]"),
+      titulo=document.querySelector("[data-hero-h1]"),
       meta=document.querySelector("[data-hero-meta]"),
       ficha=document.querySelector("[data-hero-ficha]"),
       pestanas=document.querySelectorAll(".hero-dot");
@@ -112,6 +113,7 @@
     pestanas[t].setAttribute("aria-selected", t===i ? "true" : "false");
    }
    if(palabra) palabra.textContent=datos[i].w;
+   if(titulo) titulo.textContent=datos[i].h;
    if(meta) meta.textContent=datos[i].m;
    if(ficha){ ficha.textContent="Ver el "+datos[i].w; ficha.href=datos[i].u; }
   }
