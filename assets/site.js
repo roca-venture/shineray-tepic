@@ -90,11 +90,12 @@
       palabra=car.querySelector("[data-hero-word]"),
       meta=document.querySelector("[data-hero-meta]"),
       ficha=document.querySelector("[data-hero-ficha]"),
-      pestanas=document.querySelectorAll(".hero-tab");
+      pestanas=document.querySelectorAll(".hero-dot");
   var i=0, reloj=null, elegido=false;
   // en táctil no hay cursor que pause: el avance solo cambiaría el botón
   // "Ver el X30" justo cuando el dedo va bajando. Mejor manda el deslizamiento.
   var tactil=window.matchMedia("(hover: none)").matches;
+  var aLaVista=true;
   var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function ir(k){
@@ -115,7 +116,7 @@
    if(ficha){ ficha.textContent="Ver el "+datos[i].w; ficha.href=datos[i].u; }
   }
   function para(){ if(reloj){ clearInterval(reloj); reloj=null; } }
-  function arranca(){ if(!reduce && !tactil && !elegido && !reloj) reloj=setInterval(function(){ ir(i+1); },5200); }
+  function arranca(){ if(!reduce && !elegido && aLaVista && !reloj) reloj=setInterval(function(){ ir(i+1); },6000); }
 
   for(var t=0;t<pestanas.length;t++)(function(t){
    pestanas[t].addEventListener("click",function(){ elegido=true; para(); ir(t); });
@@ -128,7 +129,7 @@
 
   ir(0);
   // avanza solo hasta que la persona elige: a partir de ahí manda ella
-  if(!reduce && !tactil) reloj=setInterval(function(){ ir(i+1); }, 5200);
+  arranca();
 
   // deslizar para cambiar de vehículo
   var sx=null, sy=null;
@@ -144,6 +145,12 @@
   },{passive:true});
   car.addEventListener("pointerenter",para);
   car.addEventListener("pointerleave",arranca);
+  if("IntersectionObserver" in window){
+   new IntersectionObserver(function(e){
+    aLaVista=e[0].isIntersecting;
+    if(aLaVista) arranca(); else para();
+   },{threshold:.5}).observe(car);
+  }
  })();
 
  // ── 360: los cuadros se decodifican una sola vez y después solo se dibujan
