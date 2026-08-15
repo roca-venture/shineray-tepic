@@ -91,7 +91,10 @@
       meta=document.querySelector("[data-hero-meta]"),
       ficha=document.querySelector("[data-hero-ficha]"),
       pestanas=document.querySelectorAll(".hero-tab");
-  var i=0, reloj=null;
+  var i=0, reloj=null, elegido=false;
+  // en táctil no hay cursor que pause: el avance solo cambiaría el botón
+  // "Ver el X30" justo cuando el dedo va bajando. Mejor manda el deslizamiento.
+  var tactil=window.matchMedia("(hover: none)").matches;
   var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function ir(k){
@@ -112,20 +115,35 @@
    if(ficha){ ficha.textContent="Ver el "+datos[i].w; ficha.href=datos[i].u; }
   }
   function para(){ if(reloj){ clearInterval(reloj); reloj=null; } }
+  function arranca(){ if(!reduce && !tactil && !elegido && !reloj) reloj=setInterval(function(){ ir(i+1); },5200); }
 
   for(var t=0;t<pestanas.length;t++)(function(t){
-   pestanas[t].addEventListener("click",function(){ para(); ir(t); });
+   pestanas[t].addEventListener("click",function(){ elegido=true; para(); ir(t); });
   })(t);
 
   // los vehículos de los lados también llevan a su modelo
   for(var q=0;q<imgs.length;q++)(function(q){
-   imgs[q].addEventListener("click",function(){ para(); ir(q); });
+   imgs[q].addEventListener("click",function(){ elegido=true; para(); ir(q); });
   })(q);
 
   ir(0);
   // avanza solo hasta que la persona elige: a partir de ahí manda ella
-  if(!reduce) reloj=setInterval(function(){ ir(i+1); }, 5200);
+  if(!reduce && !tactil) reloj=setInterval(function(){ ir(i+1); }, 5200);
+
+  // deslizar para cambiar de vehículo
+  var sx=null, sy=null;
+  car.addEventListener("touchstart",function(e){
+   sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  },{passive:true});
+  car.addEventListener("touchend",function(e){
+   if(sx===null) return;
+   var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+   sx=null;
+   if(Math.abs(dx)<40 || Math.abs(dx)<Math.abs(dy)) return;   // iba bajando, no de lado
+   elegido=true; para(); ir(i + (dx<0?1:-1));
+  },{passive:true});
   car.addEventListener("pointerenter",para);
+  car.addEventListener("pointerleave",arranca);
  })();
 
  // ── 360: los cuadros se decodifican una sola vez y después solo se dibujan

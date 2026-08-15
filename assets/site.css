@@ -141,7 +141,7 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .cta-center{justify-content:center}
 
 /* ── carrusel del encabezado: los cinco vehículos en el mismo escenario ── */
-.hero-car .stage-veh{position:relative;aspect-ratio:1400/620;overflow:visible}
+.hero-car .stage-veh{position:relative;aspect-ratio:1600/709;overflow:visible}
 /* especificidad alta a propósito: el fundido de carga (.img-fade.is-loaded)
    vive más abajo en la hoja y con menos peso le ganaba a este opacity:0,
    dejando los cinco vehículos encimados */
@@ -156,9 +156,15 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .hero-car .stage-veh .hv.is-next{transform:translateX(56%) scale(.70)}
 .hero-car .stage-veh .hv.is-prev:hover,
 .hero-car .stage-veh .hv.is-next:hover{opacity:.5}
-@media(max-width:700px){
- .hero-car .stage-veh .hv.is-prev{transform:translateX(-66%) scale(.62);opacity:.16}
- .hero-car .stage-veh .hv.is-next{transform:translateX(66%) scale(.62);opacity:.16}
+/* en pantallas medianas los laterales se acercan para no salirse del ancho */
+@media(max-width:1100px){
+ .hero-car .stage-veh .hv.is-prev{transform:translateX(-34%) scale(.58);opacity:.17}
+ .hero-car .stage-veh .hv.is-next{transform:translateX(34%) scale(.58);opacity:.17}
+}
+/* en teléfono estorban: se ve solo el vehículo actual */
+@media(max-width:680px){
+ .hero-car .stage-veh .hv.is-prev,
+ .hero-car .stage-veh .hv.is-next{opacity:0;pointer-events:none}
 }
 .hero-tabs{display:flex;gap:var(--s2);justify-content:center;flex-wrap:wrap;
  margin-top:clamp(20px,3vw,32px)}
@@ -243,7 +249,7 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s5);flex-wrap:wrap;
  margin-bottom:clamp(28px,4vw,52px)}
 .sec-head h2{margin-bottom:0}
-.sec-note{font-size:13px;color:var(--ink-2)}
+.sec-note{font-size:13px;color:var(--ink-2);text-align:right}
 .sec h2{margin-bottom:var(--s4)}
 .sec .eyebrow{margin-bottom:var(--s3)}
 .mt{margin-top:var(--s6)}
@@ -644,3 +650,23 @@ h3{font-size:20px;letter-spacing:-.02em;line-height:1.2}
 /* Ajustes hechos desde el editor visual.
    Se escriben solos al pulsar «Guardar».
    Puedes borrar cualquier bloque a mano si te arrepientes. */
+
+section.hero-h.reveal:nth-child(1) > div.wrap > div.hero-tabs:nth-child(4) > button.hero-tab:nth-child(1) {
+  display: none !important;
+}
+
+main:nth-child(3) > section.hero-h.reveal:nth-child(1) > div.wrap > div.hero-tabs:nth-child(4) {
+  display: none !important;
+}
+
+div.wrap > div.sec-head:nth-child(1) > span.sec-note:nth-child(2) > span.pend {
+  display: none !important;
+}
+
+section.sec.reveal:nth-child(3) > div.wrap > div.sec-head:nth-child(1) > span.sec-note:nth-child(2) {
+  text-align: right !important;
+}
+
+section.sec.sec-alt:nth-child(5) > div.wrap > div.sec-head:nth-child(1) > span.sec-note:nth-child(2) {
+  display: none !important;
+}
